@@ -5,76 +5,95 @@
 #include <time.h>
 #include <pwd.h>
 #include <grp.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_PATH_LENGTH 100
+#define MAX_NAME_LENGTH 500
+void addWhereEmpty(char ** array, char * str) {
+    for(int i = 0; i < MAX_PATH_LENGTH; i++) {
+        if(array[i] == NULL) {
+            array[i] = str;
+            break;
+        }
+    }
+}
+
+void listFiles(char ** pathArray, bool show_inode, bool long_listing) {
+    if(pathArray[0] == NULL) {
+        pathArray[0] = ".";
+    }
+    for(int i = 0; i < sizeof(pathArray); i++) {
+        if(pathArray[i] == NULL) {
+            break;
+        }
+        DIR *d;
+        struct dirent *dir;
+        d = opendir(pathArray[i]);
+        if (d) {
+            while ((dir = readdir(d)) != NULL) {
+
+                if (dir->d_name[0] != '.') {
+                    char fullPath[MAX_PATH_LENGTH + MAX_NAME_LENGTH];
+                    snprintf(fullPath, sizeof(fullPath), "%s/%s", pathArray[i], dir->d_name);
+                    struct stat fileStat;
+                    stat(fullPath, &fileStat);
+                    if (show_inode) {
+                        printf("%lu ", (unsigned long)dir->d_ino);
+                    }
+                    if (long_listing) {
+                        printf((S_ISDIR(fileStat.st_mode)) ? "d" : "-");
+                        printf((fileStat.st_mode & S_IRUSR) ? "r" : "-");
+                        printf((fileStat.st_mode & S_IWUSR) ? "w" : "-");
+                        printf((fileStat.st_mode & S_IXUSR) ? "x" : "-");
+                        printf((fileStat.st_mode & S_IRGRP) ? "r" : "-");
+                        printf((fileStat.st_mode & S_IWGRP) ? "w" : "-");
+                        printf((fileStat.st_mode & S_IXGRP) ? "x" : "-");
+                        printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
+                        printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
+                        printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
+                        struct passwd *pw = getpwuid(fileStat.st_uid);
+                        struct group  *gr = getgrgid(fileStat.st_gid);
+                        printf(" %6hu", fileStat.st_nlink);
+                        printf(" %5s", pw->pw_name);
+                        printf(" %7s", gr->gr_name);
+                        printf(" %6d", (int)fileStat.st_size);
+                        char date[20];
+                        strftime(date, 20, "%b %d %H:%M", localtime(&(fileStat.st_mtime)));
+                        printf(" %11s ", date);
+                    }
+                    printf("%s\n", dir->d_name);
+                }
+            }
+            closedir(d);
+        } else {
+            printf("UnixLs: %s: No such file or directory.\n", pathArray[i]);
+        }
+    }
+}
 
 int main(int argc, char *argv[]) {
-    int show_inode = 0;
-    int long_listing = 0;
+    bool show_inode = false;
+    bool long_listing = false;
+    bool flag = true;
+    char *paths[MAX_PATH_LENGTH];
     for(int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-i") == 0) {
-            show_inode = 1;
+        if ((strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "-i") == 0) && flag) {
+            show_inode = true;
         }
-        if (strcmp(argv[i], "-l") == 0) {
-            long_listing = 1;
+        if ((strcmp(argv[i], "-l") == 0 || strcmp(argv[i], "-l") == 0) && flag) {
+            long_listing = true;
+        }
+        if((strcmp(argv[i], "-il") == 0 || strcmp(argv[i], "-li") == 0) && flag) {
+            show_inode = true;
+            long_listing = true;
+        }
+        if(argv[i][0] != '-') {
+            addWhereEmpty(paths, argv[i]);
+            flag = false;
         }
     }
-
-    DIR *d;
-    struct dirent *dir;
-    d = opendir(".");
-
-    int total_size = 0;
-    if (d) {
-        while ((dir = readdir(d)) != NULL) {
-            if (dir->d_name[0] != '.') {
-                struct stat fileStat;
-                stat(dir->d_name, &fileStat);
-                total_size += fileStat.st_blocks;
-            }
-        }
-        closedir(d);
-    }
-
-    printf("total %d\n", total_size/2); // st_blocks is in 512-byte units, convert to 1K units
-
-    d = opendir(".");
-    if (d) {
-        while ((dir = readdir(d)) != NULL) {
-            if (dir->d_name[0] != '.') {
-                struct stat fileStat;
-                stat(dir->d_name, &fileStat);
-
-                if (long_listing) {
-                    printf((S_ISDIR(fileStat.st_mode)) ? "d" : "-");
-                    printf((fileStat.st_mode & S_IRUSR) ? "r" : "-");
-                    printf((fileStat.st_mode & S_IWUSR) ? "w" : "-");
-                    printf((fileStat.st_mode & S_IXUSR) ? "x" : "-");
-                    printf((fileStat.st_mode & S_IRGRP) ? "r" : "-");
-                    printf((fileStat.st_mode & S_IWGRP) ? "w" : "-");
-                    printf((fileStat.st_mode & S_IXGRP) ? "x" : "-");
-                    printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
-                    printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
-                    printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
-
-                    struct passwd *pw = getpwuid(fileStat.st_uid);
-                    struct group  *gr = getgrgid(fileStat.st_gid);
-                    printf(" %hu", fileStat.st_nlink);
-                    printf(" %s", pw->pw_name);
-                    printf(" %s", gr->gr_name);
-                    printf(" %5d", (int)fileStat.st_size);
-
-                    char date[20];
-                    strftime(date, 20, "%b %d %H:%M", localtime(&(fileStat.st_mtime)));
-                    printf(" %s", date);
-                }
-
-                if (show_inode) {
-                    printf("%lu ", (unsigned long)dir->d_ino);
-                }
-
-                printf(" %s\n", dir->d_name);
-            }
-        }
-        closedir(d);
-    }
+    listFiles(paths, show_inode, long_listing);
     return 0;
 }
+
