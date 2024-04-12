@@ -12,11 +12,14 @@
 #define MAX_PATH_LENGTH 100
 #define MAX_NAME_LENGTH 512
 
+//Initialize array
 void initializeArray(char **array, int size) {
     for (int i = 0; i < size; i++) {
         array[i] = NULL;
     }
 }
+
+//Add string to the array
 void addWhereEmpty(char ** array, char * str) {
     for(int i = 0; i < MAX_PATH_LENGTH; i++) {
         if(array[i] == NULL) {
@@ -38,7 +41,7 @@ void listFiles(char ** pathArray, bool show_inode, bool long_listing, int fileCo
         DIR *d;
         struct dirent *dir;
         d = opendir(pathArray[i]);
-        bool symlink = false;
+        bool symlinkFlag = false;
         char target[MAX_PATH_LENGTH + MAX_NAME_LENGTH];
         if (d) {
             printf("%s:\n", pathArray[i]);
@@ -46,28 +49,31 @@ void listFiles(char ** pathArray, bool show_inode, bool long_listing, int fileCo
                 if (dir->d_name[0] != '.' && dir->d_name[0] != '/') {
                     char absPath[MAX_PATH_LENGTH];
                     if (realpath(pathArray[i], absPath) == NULL) {
-                        perror("realpath");
+                        perror("Error in realpath.");
                         break;
                     }
                     char fullPath[MAX_PATH_LENGTH + MAX_NAME_LENGTH];
                     snprintf(fullPath, sizeof(fullPath), "%s/%s", absPath, dir->d_name);
                     struct stat fileStat;
                     if (lstat(fullPath, &fileStat) == -1) {
-                        perror("Error in lstat");
+                        perror("Error in lstat.");
                         printf("UnixLs: %s: No such file or directory.\n\n", dir->d_name);
                         printf("%s\n", fullPath);
                         break;
                     }
+                    //inode
                     if (show_inode) {
                         printf("%15lu ", (unsigned long)dir->d_ino);
                     }
+                    //long listing
                     if (long_listing) {
+                        //file type
                         if (S_ISLNK(fileStat.st_mode)) {
                             printf("l");
                             ssize_t len = readlink(fullPath, target, sizeof(target) - 1);
                             if (len != -1) {
                                 target[len] = '\0';
-                                symlink = true;
+                                symlinkFlag = true;
 
                             } else {
                                 perror("Error in reading symbolic link.");
@@ -78,38 +84,50 @@ void listFiles(char ** pathArray, bool show_inode, bool long_listing, int fileCo
                         } else {
                             printf("-");
                         }
-
+                        //permissions
                         printf((fileStat.st_mode & S_IRUSR) ? "r" : "-");
                         printf((fileStat.st_mode & S_IWUSR) ? "w" : "-");
                         printf((fileStat.st_mode & S_IXUSR) ? "x" : "-");
+
                         printf((fileStat.st_mode & S_IRGRP) ? "r" : "-");
                         printf((fileStat.st_mode & S_IWGRP) ? "w" : "-");
                         printf((fileStat.st_mode & S_IXGRP) ? "x" : "-");
+
                         printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
                         printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
                         printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
 
+                        //number of links
+                        printf("\t%hu\t", fileStat.st_nlink);
+
+                        //user
                         struct passwd *pw = getpwuid(fileStat.st_uid);
                         if (pw == NULL) {
                             perror("Error in get user id");
                             break;
                         }
+                        printf(" %9s ", pw->pw_name);
+
+                        //group
                         struct group  *gr = getgrgid(fileStat.st_gid);
                         if (gr == NULL) {
                             perror("Error in get group id");
                             break;
                         }
-                        printf("\t%hu\t", fileStat.st_nlink);
-                        printf(" %9s ", pw->pw_name);
                         printf(" %9s ", gr->gr_name);
+
+                        //size
                         printf(" %9d ", (int)fileStat.st_size);
+
+                        //date
                         char date[20];
                         strftime(date, 20, "%b %d %Y %H:%M", localtime(&(fileStat.st_mtime)));
                         printf(" %21s  ", date);
                     }
-                    if (symlink) {
+                    //name
+                    if (symlinkFlag) {
                         printf(" %s -> %s\n", dir->d_name, target);
-                        symlink = false;
+                        symlinkFlag = false;
                     } else {
                         printf(" %s\n", dir->d_name);
                     }
