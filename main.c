@@ -64,10 +64,8 @@ char * printLongList(struct stat fileStat, char * fullPath) {
     printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
     printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
     printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
-
     //number of links
     printf("\t%hu\t", fileStat.st_nlink);
-
     //user
     struct passwd *pw = getpwuid(fileStat.st_uid);
     if (pw == NULL) {
@@ -75,7 +73,6 @@ char * printLongList(struct stat fileStat, char * fullPath) {
         return "error";
     }
     printf(" %9s ", pw->pw_name);
-
     //group
     struct group  *gr = getgrgid(fileStat.st_gid);
     if (gr == NULL) {
@@ -83,10 +80,8 @@ char * printLongList(struct stat fileStat, char * fullPath) {
         return "error";
     }
     printf(" %9s ", gr->gr_name);
-
     //size
     printf(" %9d ", (int)fileStat.st_size);
-
     //date
     char date[20];
     strftime(date, 20, "%b %d %Y %H:%M", localtime(&(fileStat.st_mtime)));
@@ -103,16 +98,11 @@ void listFiles(char ** pathArray, bool show_inode, bool long_listing, int fileCo
             break;
         }
         struct stat fileStat;
-        if(lstat(pathArray[i], &fileStat) == -1) {
-            perror("Error in lstat.");
-            break;
-        }
+        lstat(pathArray[i], &fileStat);
         if(S_ISDIR(fileStat.st_mode)) {
             DIR *d;
             struct dirent *dir;
             d = opendir(pathArray[i]);
-            bool symlinkFlag = false;
-            char target[MAX_PATH_LENGTH + MAX_NAME_LENGTH];
             if (d) {
                 printf("%s:\n", pathArray[i]);
                 while ((dir = readdir(d)) != NULL) {
@@ -141,15 +131,12 @@ void listFiles(char ** pathArray, bool show_inode, bool long_listing, int fileCo
                             if (strcmp(longList, "error") == 0) {
                                 break;
                             } else if (strcmp(longList, "success") != 0) {
-                                stpcpy(target, longList);
-                                symlinkFlag = true;
+                                printf(" %s -> %s\n", dir->d_name, longList);
+                            } else {
+                                printf(" %s\n", dir->d_name);
                             }
                         }
-                        //name
-                        if (symlinkFlag) {
-                            printf(" %s -> %s\n", dir->d_name, target);
-                            symlinkFlag = false;
-                        } else {
+                        else {
                             printf(" %s\n", dir->d_name);
                         }
                     }
