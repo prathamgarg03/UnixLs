@@ -1,0 +1,106 @@
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -il
+.:
+       60351381 lrwxr-xrx       1        prathamgarg      staff         15      Apr 12 2024 01:02   my_link -> target_file.txt
+       60258449 drwxr-xrx       11       prathamgarg      staff        352      Apr 10 2024 23:45   cmake-build-debug
+       60258446 -rw-r--r@       1        prathamgarg      staff        120      Apr 10 2024 23:13   CMakeLists.txt
+       60450728 -rwxr-xrx       1        prathamgarg      staff      34686      Apr 12 2024 18:53   a
+       60258254 -rw-r--r@       1        prathamgarg      staff         44      Apr 10 2024 23:12   README.md
+       60258432 -rw-r--r@       1        prathamgarg      staff       6574      Apr 12 2024 18:54   main.c
+       60450559 -rw-r--r@       1        prathamgarg      staff       2366      Apr 12 2024 18:55   output.txt
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -i
+.:
+       60351381  my_link
+       60258449  cmake-build-debug
+       60258446  CMakeLists.txt
+       60450728  a
+       60258254  README.md
+       60258432  main.c
+       60450559  output.txt
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -l
+.:
+lrwxr-xrx       1        prathamgarg      staff         15      Apr 12 2024 01:02   my_link -> target_file.txt
+drwxr-xrx       11       prathamgarg      staff        352      Apr 10 2024 23:45   cmake-build-debug
+-rw-r--r@       1        prathamgarg      staff        120      Apr 10 2024 23:13   CMakeLists.txt
+-rwxr-xrx       1        prathamgarg      staff      34686      Apr 12 2024 18:53   a
+-rw-r--r@       1        prathamgarg      staff         44      Apr 10 2024 23:12   README.md
+-rw-r--r@       1        prathamgarg      staff       6574      Apr 12 2024 18:54   main.c
+-rw-r--r@       1        prathamgarg      staff       2366      Apr 12 2024 18:55   output.txt
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a
+.:
+ my_link
+ cmake-build-debug
+ CMakeLists.txt
+ a
+ README.md
+ main.c
+ output.txt
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a ../
+../:
+ UnixLs
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -i ~/
+/Users/prathamgarg/:
+         236739  Music
+       37095058  get-pip.py
+       20517851  VirtualBox VMs
+       37067312  roop
+       32143349  matlab_crash_dump.31095-1
+         236741  Pictures
+       57835927  Postman
+       32143344  hs_error_pid31095.log
+         236743  Desktop
+         236745  Library
+       37260863  a
+       37258325  #
+         236781  Public
+       22708935  MATLAB
+       37262142  virtual
+         236785  Movies
+         289007  Applications
+       37264702  named
+       37263416  environment
+         236787  Documents
+       37257057  myenv
+       37259597  Create
+         236789  Downloads
+       39260642  humanoid
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -i -l
+.:
+       60351381 lrwxr-xrx       1        prathamgarg      staff         15      Apr 12 2024 01:02   my_link -> target_file.txt
+       60258449 drwxr-xrx       11       prathamgarg      staff        352      Apr 10 2024 23:45   cmake-build-debug
+       60258446 -rw-r--r@       1        prathamgarg      staff        120      Apr 10 2024 23:13   CMakeLists.txt
+       60450728 -rwxr-xrx       1        prathamgarg      staff      34686      Apr 12 2024 18:53   a
+       60258254 -rw-r--r@       1        prathamgarg      staff         44      Apr 10 2024 23:12   README.md
+       60258432 -rw-r--r@       1        prathamgarg      staff       6574      Apr 12 2024 18:54   main.c
+       60450559 -rw-r--r@       1        prathamgarg      staff       2366      Apr 12 2024 18:55   output.txt
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -i -l ..~
+UnixLs: ..~: No such file or directory.
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -li . ..~
+.:
+       60351381 lrwxr-xrx       1        prathamgarg      staff         15      Apr 12 2024 01:02   my_link -> target_file.txt
+       60258449 drwxr-xrx       11       prathamgarg      staff        352      Apr 10 2024 23:45   cmake-build-debug
+       60258446 -rw-r--r@       1        prathamgarg      staff        120      Apr 10 2024 23:13   CMakeLists.txt
+       60450728 -rwxr-xrx       1        prathamgarg      staff      34686      Apr 12 2024 18:53   a
+       60258254 -rw-r--r@       1        prathamgarg      staff         44      Apr 10 2024 23:12   README.md
+       60258432 -rw-r--r@       1        prathamgarg      staff       6574      Apr 12 2024 18:54   main.c
+       60450559 -rw-r--r@       1        prathamgarg      staff       2366      Apr 12 2024 18:55   output.txt
+prathamgarg@Prathams-MacBook-Air-2 UnixLs % ./a -li . ../
+.:
+       60351381 lrwxr-xrx       1        prathamgarg      staff         15      Apr 12 2024 01:02   my_link -> target_file.txt
+       60258449 drwxr-xrx       11       prathamgarg      staff        352      Apr 10 2024 23:45   cmake-build-debug
+       60258446 -rw-r--r@       1        prathamgarg      staff        120      Apr 10 2024 23:13   CMakeLists.txt
+       60450728 -rwxr-xrx       1        prathamgarg      staff      34686      Apr 12 2024 18:53   a
+       60258254 -rw-r--r@       1        prathamgarg      staff         44      Apr 10 2024 23:12   README.md
+       60258432 -rw-r--r@       1        prathamgarg      staff       6574      Apr 12 2024 18:54   main.c
+       60450559 -rw-r--r@       1        prathamgarg      staff       2366      Apr 12 2024 18:55   output.txt
+../:
+       60258179 drwxr-xrx       11       prathamgarg      staff        352      Apr 12 2024 18:54   UnixLs
+
+
+
+
+
+
+
+
+
+

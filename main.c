@@ -8,10 +8,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 
-#define MAX_PATH_LENGTH 100
-#define MAX_NAME_LENGTH 512
+#define MAX_PATH_LENGTH 1024
+#define MAX_NAME_LENGTH 1024
 
 //Initialize array
 void initializeArray(char **array, int size) {
@@ -88,6 +87,7 @@ char * printLongList(struct stat fileStat, char * fullPath) {
     printf(" %21s  ", date);
     return symLink;
 }
+
 void listFiles(char ** pathArray, bool show_inode, bool long_listing, int fileCount) {
     if(fileCount == 0) {
         pathArray[0] = ".";
