@@ -1,3 +1,0 @@
-/Users/prathamgarg/Desktop/CMPT 300/assignment4/UnixLs/cmake-build-debug/CMakeFiles/UnixLs.dir
-/Users/prathamgarg/Desktop/CMPT 300/assignment4/UnixLs/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/prathamgarg/Desktop/CMPT 300/assignment4/UnixLs/cmake-build-debug/CMakeFiles/rebuild_cache.dir
